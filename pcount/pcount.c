@@ -29,126 +29,104 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <stdio.h>  // printf
+#include "stdio.h"
+#include "stdlib.h"
+#include "time.h"
 
 #include "sps/sensirion_uart.h"
 #include "sps/sps30.h"
 
-/**
- * TO USE CONSOLE OUTPUT (PRINTF) AND WAIT (SLEEP) PLEASE ADAPT THEM TO YOUR
- * PLATFORM
- */
-//#define printf(...)
+void curr_time(){
+    printf("%ld ", time(NULL));
+    return;
+}
 
-int main(void) {
+int main(int argc, char ** argv) {
+
+    if ((argc != 1) && (argc != 3)){
+        printf("USAGE: pcount <# measurements> <interval>\n");
+    }
+
+    // default take measurements for a minute
+    // data is not reliable until ~30 seconds in
+    int n_measurements = 60;
+    int interval = 1;
+    if (argc == 3){
+        n_measurements = atoi(argv[1]);
+        interval = atoi(argv[2]); // interval in seconds
+    }
+
     struct sps30_measurement m;
-    char serial[SPS30_MAX_SERIAL_LEN];
     const uint8_t AUTO_CLEAN_DAYS = 4;
-    int16_t ret;
+    int16_t res;
 
+    // uart connection
     while (sensirion_uart_open() != 0) {
-        printf("UART init failed\n");
+        curr_time();
+        printf("[ERROR]: UART init failed\n");
         sensirion_sleep_usec(1000000); /* sleep for 1s */
     }
 
-    /* Busy loop for initialization, because the main loop does not work without
-     * a sensor.
-     */
+    // check for sensor
     while (sps30_probe() != 0) {
-        printf("SPS30 sensor probing failed\n");
+        curr_time();
+        printf("[ERROR]: SPS30 sensor probing failed\n");
         sensirion_sleep_usec(1000000); /* sleep for 1s */
     }
-    printf("SPS30 sensor probing successful\n");
 
-    struct sps30_version_information version_information;
-    ret = sps30_read_version(&version_information);
-    if (ret) {
-        printf("error %d reading version information\n", ret);
-    } else {
-        printf("FW: %u.%u HW: %u, SHDLC: %u.%u\n",
-               version_information.firmware_major,
-               version_information.firmware_minor,
-               version_information.hardware_revision,
-               version_information.shdlc_major,
-               version_information.shdlc_minor);
+    // automatically clean the fan every x days
+    res = sps30_set_fan_auto_cleaning_interval_days(AUTO_CLEAN_DAYS);
+    if (res) {
+        curr_time();
+        printf("[ERROR]: setting the auto-clean interval %d\n", res);
     }
 
-    ret = sps30_get_serial(serial);
-    if (ret)
-        printf("error %d reading serial\n", ret);
-    else
-        printf("SPS30 Serial: %s\n", serial);
+    uint32_t second = 1000000; // 1 second in microseconds
 
-    ret = sps30_set_fan_auto_cleaning_interval_days(AUTO_CLEAN_DAYS);
-    if (ret)
-        printf("error %d setting the auto-clean interval\n", ret);
+    // start measurement loop
 
-    while (1) {
-        ret = sps30_start_measurement();
-        if (ret < 0) {
-            printf("error starting measurement\n");
-        }
-
-        printf("measurements started\n");
-
-        for (int i = 0; i < 60; ++i) {
-
-            ret = sps30_read_measurement(&m);
-            if (ret < 0) {
-                printf("error reading measurement\n");
-            } else {
-                if (SPS30_IS_ERR_STATE(ret)) {
-                    printf(
-                        "Chip state: %u - measurements may not be accurate\n",
-                        SPS30_GET_ERR_STATE(ret));
-                }
-
-                printf("measured values:\n"
-                       "\t%0.2f pm1.0\n"
-                       "\t%0.2f pm2.5\n"
-                       "\t%0.2f pm4.0\n"
-                       "\t%0.2f pm10.0\n"
-                       "\t%0.2f nc0.5\n"
-                       "\t%0.2f nc1.0\n"
-                       "\t%0.2f nc2.5\n"
-                       "\t%0.2f nc4.5\n"
-                       "\t%0.2f nc10.0\n"
-                       "\t%0.2f typical particle size\n\n",
-                       m.mc_1p0, m.mc_2p5, m.mc_4p0, m.mc_10p0, m.nc_0p5,
-                       m.nc_1p0, m.nc_2p5, m.nc_4p0, m.nc_10p0,
-                       m.typical_particle_size);
-            }
-            sensirion_sleep_usec(1000000); /* sleep for 1s */
-        }
-
-        /* Stop measurement for 1min to preserve power. Also enter sleep mode
-         * if the firmware version is >=2.0.
-         */
-        ret = sps30_stop_measurement();
-        if (ret) {
-            printf("Stopping measurement failed\n");
-        }
-
-        if (version_information.firmware_major >= 2) {
-            ret = sps30_sleep();
-            if (ret) {
-                printf("Entering sleep failed\n");
-            }
-        }
-
-        printf("No measurements for 1 minute\n");
-        sensirion_sleep_usec(1000000 * 60);
-
-        if (version_information.firmware_major >= 2) {
-            ret = sps30_wake_up();
-            if (ret) {
-                printf("Error %i waking up sensor\n", ret);
-            }
-        }
+    res = sps30_start_measurement();
+    if (res < 0) {
+        curr_time();
+        printf("[ERROR]: Cannot start measurement!\n");
     }
 
-    if (sensirion_uart_close() != 0)
-        printf("failed to close UART\n");
+    for (int i=0; i<n_measurements; i++) {
+
+        res = sps30_read_measurement(&m);
+        if (res < 0) {
+            // measurement reading error, sleep
+            curr_time();
+            printf("-1 -1 -1 -1 -1 -1 -1 -1 -1 -1 \n");
+        } else {
+            if (SPS30_IS_ERR_STATE(res)) {
+                curr_time();
+                printf("[ERROR]: STATE %u\n", SPS30_GET_ERR_STATE(res));
+            }
+
+            // pm1.0 pm2.5 pm4.0 pm10.0 nc0.5 nc1.0 nc2.5 nc4.0 nc10.0 psize
+            curr_time();
+            printf("%0.3f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f\n",
+                   m.mc_1p0, m.mc_2p5, m.mc_4p0, m.mc_10p0,
+                   m.nc_0p5, m.nc_1p0, m.nc_2p5, m.nc_4p0, m.nc_10p0,
+                   m.typical_particle_size);
+        }
+        sensirion_sleep_usec((uint32_t) interval*second); /* sleep for 1s */
+    }
+
+    // stop measurement
+    res = sps30_stop_measurement();
+    if (res) {
+        curr_time();
+        printf("[ERROR]: Stopping measurement failed!\n");
+    }
+
+    // close uart connection
+    res = sensirion_uart_close();
+    if (res != 0){
+        curr_time();
+        printf("[ERROR]: Failed to close UART!\n");
+    }
 
     return 0;
 }
