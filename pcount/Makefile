@@ -11,7 +11,7 @@ RPATH_LIBDIRS=$(addprefix -Wl$(_COMMA)-rpath$(_COMMA),$(_LIBDIRS))
 _LIBS=sps
 LIBS=$(addprefix -l,$(_LIBS))
 
-CFLAGS=-O3 -Wall $(INCDIRS) -fstrict-aliasing -Wstrict-aliasing=1 -Wsign-conversion -fPIC
+CFLAGS=-O3 -Wall $(INCDIRS) -fstrict-aliasing -Wstrict-aliasing=1 -Wsign-conversion -fPIC -std=gnu99
 LDFLAGS=-O3 $(INCDIRS) $(LIBDIRS) $(LIBS) $(RPATH_LIBDIRS)
 _SRCFILES=pcount.c
 .SRCS=$(_SRCFILES)

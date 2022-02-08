@@ -31,8 +31,8 @@
 
 #include <stdio.h>  // printf
 
-#include "sensirion_uart.h"
-#include "sps30.h"
+#include "sps/sensirion_uart.h"
+#include "sps/sps30.h"
 
 /**
  * TO USE CONSOLE OUTPUT (PRINTF) AND WAIT (SLEEP) PLEASE ADAPT THEM TO YOUR

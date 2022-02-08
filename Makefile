@@ -9,7 +9,7 @@ LIBDIRS=$(addprefix -L,$(_LIBDIRS))
 _LIBS=
 LIBS=$(addprefix -l,$(_LIBS))
 
-CFLAGS=-O3 -Wall $(INCDIRS) -fstrict-aliasing -Wstrict-aliasing=1 -Wsign-conversion -fPIC
+CFLAGS=-O3 -Wall $(INCDIRS) -fstrict-aliasing -Wstrict-aliasing=1 -Wsign-conversion -fPIC -std=gnu99
 LDFLAGS=-O3 -shared $(INCDIRS) $(LIBDIRS) $(LIBS)
 
 SRCDIR=src
