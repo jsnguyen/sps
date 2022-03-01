@@ -21,7 +21,7 @@
  * default output filename format -> folder/YYYY-MM-DD_sps30.bin
  *
  * Binary format is:
- * time    ,  pm1.0,  pm2.5,  pm4.0, pm10.0,  nc0.5,  nc1.0,  nc2.5,  nc4.0, nc10.0, particle size
+ * time    ,  pm1.0,  pm2.5,  pm4.0, pm10.0,  nc0.5,  nc1.0,  nc2.5,  nc4.0, nc10.0,  particle size
  * long int,  float,  float,  float,  float,  float,  float,  float,  float,  float,  float
  * 24 bytes total per measurement
  *

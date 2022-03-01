@@ -8,7 +8,7 @@ This is a reorganization of the [Sensirion SPS30 library](https://github.com/Sen
 Each measurement is 24 bytes long in the following structure:
 
 ```
-time    ,  pm1.0,  pm2.5,  pm4.0, pm10.0,  nc0.5,  nc1.0,  nc2.5,  nc4.0, nc10.0, particle size
+time    ,  pm1.0,  pm2.5,  pm4.0, pm10.0,  nc0.5,  nc1.0,  nc2.5,  nc4.0, nc10.0,  particle size
 long int,  float,  float,  float,  float,  float,  float,  float,  float,  float,  float
 ```
 The mass concentration (PMx.x) is in units of micrograms per meter cubed. The number concentration is in units of particles per meter cubed. The average particle size is in units of micrometers.
