@@ -25,6 +25,7 @@ See the comments in `pcount/pcount.c` for more detail about the script.
 Make plots with:
 
 ```
+cd plots
 python3 plot_sps30.py
 ```
 
