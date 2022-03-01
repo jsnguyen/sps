@@ -44,6 +44,12 @@ $(OBJDIR)/%.o : $(SRCDIR)/%.c
 .SECONDARY: $(OBJS)
 .PHONY: clean
 
+install:
+	cp bin/pcount /usr/bin
+
+uninstall:
+	rm /usr/bin/pcount
+
 clean:
 	rm -f $(OBJDIR)/*.o
 	rm -f $(LIBDIR)/*.a
