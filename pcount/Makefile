@@ -8,10 +8,10 @@ LIBDIRS=$(addprefix -L,$(_LIBDIRS))
 _COMMA=,
 RPATH_LIBDIRS=$(addprefix -Wl$(_COMMA)-rpath$(_COMMA),$(_LIBDIRS))
 
-_LIBS=sps
-LIBS=$(addprefix -l,$(_LIBS))
+_LIBS=libsps.a
+LIBS=$(addprefix -l:,$(_LIBS))
 
-CFLAGS=-O3 -Wall $(INCDIRS) -fstrict-aliasing -Wstrict-aliasing=1 -Wsign-conversion -fPIC -std=gnu99
+CFLAGS=-O3 -Wall $(INCDIRS) -fstrict-aliasing -Wstrict-aliasing=1 -Wsign-conversion -fPIC
 LDFLAGS=-O3 $(INCDIRS) $(LIBDIRS) $(LIBS) $(RPATH_LIBDIRS)
 _SRCFILES=pcount.c
 .SRCS=$(_SRCFILES)
@@ -21,12 +21,14 @@ OBJS=$(_OBJFILES)
 
 EXE=pcount
 
-LIBNAME=libsps.so
+LIBNAME=libsps.a
 
 DIRGUARD=@mkdir -p $(@D)
 BINDIR=../bin
 
-all: $(BINDIR)/$(EXE)
+DATADIR=data
+
+all: $(BINDIR)/$(EXE) directories
 
 $(BINDIR)/%: $(OBJS)
 	$(DIRGUARD)
@@ -35,8 +37,13 @@ $(BINDIR)/%: $(OBJS)
 %.o : %.c
 	$(CC) $< -c -o $@ $(CFLAGS)
 
-.SECONDARY: $(OBJS)
-.PHONY: clean
+directories : $(DATADIR)
+
+$(DATADIR):
+	mkdir -p $(DATADIR)
+
+.SECONDARY: $(OBJS) $(DATADIR)
+.PHONY: clean directories
 
 clean:
 	rm -f *.o
