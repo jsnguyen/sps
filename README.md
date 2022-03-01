@@ -20,6 +20,20 @@ A marker is inserted on startup by setting all of the measurements to -1 so that
 
 See the comments in `pcount/pcount.c` for more detail about the script.
 
+## Plots
+
+Make plots with:
+
+```
+python3 plot_sps30.py
+```
+
+Plotting requires `python3.6+`, `matplotlib` and `numpy`.
+
+This plots a time series of all the data collected for the most recent day. Outputs a filename of the format `YYYY-MM-DD_sps30.png` in the folder that you run your script in. By default, it uses a rolling average of the last 200 points.
+
+This is typically run as a cron job at the end of the day, right before 12am.
+
 ## Installation
 
 To install:
