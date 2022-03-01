@@ -11,9 +11,10 @@ Each measurement is 24 bytes long in the following structure:
 time    ,  pm1.0,  pm2.5,  pm4.0, pm10.0,  nc0.5,  nc1.0,  nc2.5,  nc4.0, nc10.0,  particle size
 long int,  float,  float,  float,  float,  float,  float,  float,  float,  float,  float
 ```
-The mass concentration (PMx.x) is in units of micrograms per meter cubed. The number concentration is in units of particles per meter cubed. The average particle size is in units of micrometers.
 
-The first 30 measurements are tossed since they aren't reliable according to the data sheets. All subsequent measurements are okay.
+The mass concentration (PMx.x) is in units of micrograms per meter cubed. The number concentration (NCx.x) is in units of particles per centimeter cubed. The average particle size is in units of micrometers.
+
+The first 30 measurements after startup are tossed since they aren't reliable according to the data sheets. All subsequent measurements are okay.
 
 A marker is inserted on startup by setting all of the measurements to -1 so that we can keep track of when the script starts. Otherwise, if the sensor reports bad data, it is not logged. If the script restarts, data is appended to the existing file.
 
@@ -41,4 +42,4 @@ To run:
 ```
 pcount
 ```
-Typically this is run as a `systemd` executable, but the raw output of the script may be useful to test if it is working or not.
+Typically this is run as a `systemd` service, but the raw output of the script may be useful to test if it is working or not.
