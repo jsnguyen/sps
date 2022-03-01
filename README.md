@@ -29,7 +29,7 @@ cd plots
 python3 plot_sps30.py
 ```
 
-Plotting requires `python3.6+`, `matplotlib` and `numpy`.
+Plotting requires `python3.6+`, `matplotlib`, and `numpy`.
 
 This plots a time series of all the data collected for the most recent day. Outputs a filename of the format `YYYY-MM-DD_sps30.png` in the folder that you run your script in. By default, it uses a rolling average of the last 200 points.
 
