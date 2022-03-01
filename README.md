@@ -41,4 +41,4 @@ To run:
 ```
 pcount
 ```
-Typically this is run in as a `systemd` executable, but the raw output of the script may be useful to test if it is working or not.
+Typically this is run as a `systemd` executable, but the raw output of the script may be useful to test if it is working or not.
