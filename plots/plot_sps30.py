@@ -65,12 +65,12 @@ def plot_data(data, n_avg, output_filename=None):
 
     axs[2].plot(short_times, rolling_average(data.typical_particle_size, n=n_avg), linestyle='-')
 
-    axs[0].set_title(data.times[0].strftime('%Y-%m-%d'))
+    axs[0].set_title(data.times[-1].strftime('Last Reading: %Y-%m-%d %H:%M:%S'))
 
     #axs[2].set_xlabel('Time')
 
-    axs[0].set_ylabel('Mass Concentration [$\mu g/cm^3$]')
-    axs[1].set_ylabel('Number Concentration [$\#/m^3$]')
+    axs[0].set_ylabel('Mass Concentration [$\mu g/m^3$]')
+    axs[1].set_ylabel('Number Concentration [$\#/cm^3$]')
     axs[2].set_ylabel('Typical Particle Size [$\mu m$]')
 
     axs[0].tick_params(bottom=False)
@@ -101,7 +101,7 @@ def get_latest(search_dir):
 
 def main():
 
-    search_dir = '/Users/jsn/landing/data/'
+    search_dir = '/home/espresso/sps/pcount/data/'
     latest_filename = get_latest(search_dir)
     latest_output_filename = os.path.basename(latest_filename[:-4])+'.png'
     print('Plotting: {} -> {}'.format(latest_filename, latest_output_filename))
